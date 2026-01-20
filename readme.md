@@ -43,7 +43,7 @@ docker run --name docker-container -p 9000:9000 -e "MINIO_ROOT_USER=minio" -e "M
 ```
 
 5. Create an initial migration and generate the Prisma data
-   `npx prisma migrate dev --name init`
+`npx prisma migrate dev --name init`
 
 `npx prisma generate`
 
@@ -110,3 +110,4 @@ The `/auth/reset-password-request` route will send an email given that the email
 `/roles/user/:userId` | `GET` `POST` `PUT`
 
 `roles/user:userId/role/:roleId` | `DELETE`
+
