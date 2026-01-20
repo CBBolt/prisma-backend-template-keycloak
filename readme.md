@@ -62,6 +62,8 @@ If testing locally with Postman or other HTTP Tool, make sure the **Authorizatio
 
 The `/auth/reset-password-request` route will send an email given that the email credentials are valid. The URL it gives can then be used to verify the token and reset the password
 
+The initial users will not be able to access anything so you will need to go into the **UserRoles** table and set some basic permissions / roles. If you seed the database, you can assign users (once created) to **1** (Admin) or **2** (User). To view the tables and make changes, you can utilize `npx prisma studio` to access Prisma's built in table editor / viewer. 
+
 ## Routes
 
 **auth**
@@ -111,5 +113,6 @@ The `/auth/reset-password-request` route will send an email given that the email
 `/roles/user/:userId` | `GET` `POST` `PUT`
 
 `roles/user:userId/role/:roleId` | `DELETE`
+
 
 
