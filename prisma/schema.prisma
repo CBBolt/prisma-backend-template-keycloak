@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id        Int         @id @default(autoincrement())
+  email     String      @unique
+  name      String?
+  password  String
+  userRoles UserRoles[]
+}
+
+model Role {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  userRoles   UserRoles[]
+  permissions Permission[] @relation("RolePermissions")
+}
+
+model UserRoles {
+  userId Int
+  roleId Int
+  role   Role @relation(fields: [roleId], references: [id])
+  user   User @relation(fields: [userId], references: [id])
+
+  @@id([userId, roleId])
+  @@index([roleId], map: "UserRoles_roleId_fkey")
+}
+
+model Permission {
+  id     Int    @id @default(autoincrement())
+  action String
+  entity String
+  roles  Role[] @relation("RolePermissions")
+
+  @@unique([action, entity])
+}
+
+model Post {
+  id      Int    @id @default(autoincrement())
+  title   String
+  content String
+}
