@@ -23,32 +23,22 @@ router.patch(
   "/:id",
   checkPermission("permission", "update"),
   async (req, res) => {
-    const permissionId = Number(req.params.id);
+    const permissionId = req.params.id;
     const { action, entity } = req.body;
 
+    const data = Object.fromEntries(
+      Object.entries({ action, entity }).filter(([, v]) => v !== undefined),
+    );
+
     try {
-      // First, get the current permission to check what the current values are
-      const currentPermission = await prisma.permission.findUnique({
-        where: { id: permissionId },
-      });
-
-      // If permission doesn't exist, return a 404
-      if (!currentPermission) {
-        return res.status(404).json({ error: "Permission not found" });
-      }
-
-      // Prepare the data to update based on provided values (keeping existing values for non-specified fields)
       const updatedPermission = await prisma.permission.update({
         where: { id: permissionId },
-        data: {
-          action: action || currentPermission.action, // Use the current value if not provided
-          entity: entity || currentPermission.entity, // Use the current value if not provided
-        },
+        data,
       });
 
       res.json(updatedPermission);
     } catch (error) {
-      console.error(error);
+      console.error("Permission: ", error);
       res.status(500).json({ error: "Failed to update permission" });
     }
   },
@@ -58,7 +48,7 @@ router.delete(
   "/:id",
   checkPermission("permission", "delete"),
   async (req, res) => {
-    const permissionId = Number(req.params.id);
+    const permissionId = req.params.id;
 
     try {
       await prisma.permission.delete({

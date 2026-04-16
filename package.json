@@ -29,12 +29,14 @@
     "@aws-sdk/s3-request-presigner": "^3.968.0",
     "@aws-sdk/types": "^3.968.0",
     "@prisma/adapter-mariadb": "^7.2.0",
-    "@prisma/client": "^7.2.0",
+    "@prisma/client": "^7.6.0",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
+    "jose": "^6.2.2",
     "jsonwebtoken": "^9.0.3",
+    "keycloak-admin": "^1.14.22",
     "multer": "^2.0.2",
     "nodemailer": "^7.0.12"
   }

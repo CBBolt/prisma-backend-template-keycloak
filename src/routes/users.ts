@@ -1,53 +1,62 @@
 import express, { Request, Response } from "express";
 import prisma from "../lib/prisma";
-
-import { comparePassword, hashPassword } from "../utils/auth";
+import { toPermissionString } from "../lib/helpers";
 
 const router = express.Router();
 
-router.get("/profile", (req: Request, res: Response) => {
-  res.status(200).json({ message: "Access granted", userId: req.userId });
-});
+router.get("/profile", async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.sub;
 
-router.post("/change-password", async (req: Request, res: Response) => {
-  const { currentPassword, newPassword } = req.body;
+    if (!userId) {
+      // If there's no userId, return a 401 Unauthorized response
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
-  // Ensure both current and new passwords are provided
-  if (!currentPassword || !newPassword) {
-    return res
-      .status(400)
-      .json({ error: "Please provide both current and new passwords" });
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        userRoles: {
+          include: {
+            role: {
+              include: {
+                permissions: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      // If user is not found, return a 404 response
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Create a permissions set to avoid duplicates
+    const permissionsSet = new Set<string>();
+
+    user.userRoles.forEach((ur) => {
+      ur.role.permissions.forEach((perm) => {
+        const permission = toPermissionString(perm.action, perm.entity);
+        permissionsSet.add(permission);
+      });
+    });
+
+    // Convert the set into an array
+    const permissions = Array.from(permissionsSet);
+
+    // Send the response with user details and permissions
+    return res.status(200).json({
+      user: req.user,
+      roles: user.userRoles.map((ur) => ur.role.name),
+      permissions,
+    });
+  } catch (error) {
+    console.error("Profile error:", error);
+    // If there's an error during processing, return a 500 response
+    return res.status(500).json({ message: "Internal server error" });
   }
-
-  // Find the user based on the userId stored in the token
-  const user = await prisma.user.findUnique({
-    where: { id: req.userId },
-  });
-
-  if (!user) {
-    return res.status(404).json({ error: "User not found" });
-  }
-
-  // Compare current password with stored password
-  const isPasswordCorrect = await comparePassword(
-    currentPassword,
-    user.password,
-  );
-
-  if (!isPasswordCorrect) {
-    return res.status(401).json({ error: "Current password is incorrect" });
-  }
-
-  // Hash the new password
-  const hashedNewPassword = await hashPassword(newPassword);
-
-  // Update the password in the database
-  await prisma.user.update({
-    where: { id: req.userId },
-    data: { password: hashedNewPassword },
-  });
-
-  return res.status(200).json({ message: "Password updated successfully" });
 });
 
 export default router;

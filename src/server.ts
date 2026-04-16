@@ -5,11 +5,11 @@ import cors from "cors";
 import permissions from "./routes/permissions";
 import roles from "./routes/roles";
 
-import authRoutes from "./routes/auth";
+// import authRoutes from "./routes/auth";
 import users from "./routes/users";
 import images from "./routes/images";
 import posts from "./routes/posts";
-import resetPassword from "./routes/resetPassword";
+import keycloak from "./routes/keycloak";
 
 import { authenticate } from "./middleware/auth";
 
@@ -19,7 +19,7 @@ const app = express();
 
 // Define allowed origins
 const allowedOrigins = [
-  "http://localhost:3000",
+  "http://localhost:5173",
   "https://yourfrontenddomain.com",
 ];
 
@@ -34,23 +34,21 @@ app.use(
         callback(new Error("Not allowed by CORS"));
       }
     },
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
 
 app.use(express.json());
 
-// Auth routes
-app.use("/auth", authRoutes);
-
 // Roles / Permission Routes
 app.use("/roles", authenticate, roles);
 app.use("/permissions", authenticate, permissions);
 
-app.use("/reset-password", resetPassword);
 app.use("/images", images);
-app.use("/post", authenticate, posts);
+app.use("/posts", authenticate, posts);
+
+app.use("/keycloak", authenticate, keycloak);
 
 //Route to get users profile and change password
 app.use("/users", authenticate, users);

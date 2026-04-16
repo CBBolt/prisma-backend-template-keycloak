@@ -1,7 +1,13 @@
 declare global {
   namespace Express {
     interface Request {
-      userId?: number; // Add userId to Request type (optional)
+      user: {
+        sub: string;
+        email: string;
+        preferred_username: string;
+        name: string;
+      };
+      permissions: string[];
     }
   }
 }

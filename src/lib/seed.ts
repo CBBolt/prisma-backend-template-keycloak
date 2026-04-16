@@ -25,6 +25,11 @@ type SeedPermission = {
 };
 
 const permissionsToSeed: SeedPermission[] = [
+  { action: "read", entity: "user" },
+  { action: "create", entity: "user" },
+  { action: "update", entity: "user" },
+  { action: "delete", entity: "user" },
+
   // Post permissions
   { action: "read", entity: "post" },
   { action: "create", entity: "post" },

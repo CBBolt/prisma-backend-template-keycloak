@@ -1,14 +1,13 @@
-# Prisma Backend Template - Extended
+# Prisma Backend Template - KeyCloak
 
 This is a backend template setup with:
 
 - Prisma
 - MySQL
 - CORS
-- JSON Web Tokens (JWT)
-- Basic Email (Password resets using **nodemailer**)
 - MinIO (Image Server)
 - Simple Role Based Permissions
+- Keycloak (authentication)
 
 ## Setup
 
@@ -23,36 +22,50 @@ This is a backend template setup with:
 - `MINIO_URL` (for MinIO server)
 - `MINIO_ROOT_USER`
 - `MINIO_ROOT_PASSWORD`
-- `JWT_SECRET` (For JWT)
-- `EMAIL_USER` (For **nodemailer**)
-- `EMAIL_PASS` (For **nodemailer**)
-  - _Note: If email account has 2 MFA, you will need to use an app password_
+- `KC_URL` (for Keycloak server)
+- `KC_REALM`
+- `KC_CLIENT_ID`
+- `KC_CLIENT_SECRET`
+
+  _Note: For more information on Keycloak info for this template, please refer to the `keycloak` folder_
 
 3. Setup Docker for local instance of MySQL DB **(optional)**
 
-Run the below script to create a local docker instance (Make sure docker is installed)
+   Run the below script to create a local docker instance (Make sure docker is installed)
 
-```
-docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=rootpassword -e MYSQL_DATABASE=mydatabase -p 3306:3306 -d mysql:latest
-```
+   ```
+   docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=rootpassword -e MYSQL_DATABASE=mydatabase -p 3306:3306 -d mysql:latest
+   ```
 
 4. Setup Docker for local instance of MinIO Server **(optional)**
 
-```
-docker run --name docker-container -p 9000:9000 -e "MINIO_ROOT_USER=minio" -e "MINIO_ROOT_PASSWORD=minio123" minio/minio server /data
-```
+   ```
+   docker run --name minio-container -p 9000:9000 -e "MINIO_ROOT_USER=minio" -e "MINIO_ROOT_PASSWORD=minio123" minio/minio server /data
+   ```
 
-5. Create an initial migration and generate the Prisma data
+5. Setup Docker for local instance of Keycloak Server **(optional)**
 
-`npx prisma migrate dev --name init`
+   ```
+   docker run -p 8080:8080 -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:latest start-dev
+   ```
 
-`npx prisma generate`
+_Note: Refer to the `keycloak` folder for more specifics with using custom themes_
 
-_Note: The generated prisma will be in the `src/generated/prisma` folder per the output path in the `schema.prisma` file_
+6. Create an initial migration and generate the Prisma data
 
-6. Run `npm run seed` to seed the database with basic permissions **(optional)**
+   `npx prisma migrate dev --name init`
 
-7. Run `npm run dev` to start the local express server
+   `npx prisma generate`
+
+   _Note: The generated prisma will be in the `src/generated/prisma` folder per the output path in the `schema.prisma` file_
+
+7. Run `npm run seed` to seed the database with basic permissions **(optional)**
+
+8. Run `npm run dev` to start the local express server
+
+9. Additionally, you'll need to login to the keycloak admin portal to make an inital user
+
+   _Note: Refer to the `keycloak` folder for more specifics on initial setup_
 
 ## Additional Notes
 
@@ -60,59 +73,4 @@ If Prisma is unable to reach the DB, run `npx prisma db pull` to pull the existi
 
 If testing locally with Postman or other HTTP Tool, make sure the **Authorization** header is added once the token is retreived
 
-The `/auth/reset-password-request` route will send an email given that the email credentials are valid. The URL it gives can then be used to verify the token and reset the password
-
-The initial users will not be able to access anything so you will need to go into the **UserRoles** table and set some basic permissions / roles. If you seed the database, you can assign users (once created) to **1** (Admin) or **2** (User). To view the tables and make changes, you can utilize `npx prisma studio` to access Prisma's built in table editor / viewer. 
-
-## Routes
-
-**auth**
-
-`/auth/signup` | `POST`
-
-`/auth/login` | `POST`
-
-`/auth/reset-password-request` | `POST`
-
-**resetPassword**
-
-`/reset-password` | `GET` `POST`
-
-**users**
-
-`/profile` | `GET`
-
-`/change-password` | `POST`
-
-**images**
-
-`/images/:key` | `GET` `DELETE`
-
-`/images/upload` | `POST`
-
-**posts** | _Note: Dummy Route to showcase permissions_
-
-`/posts/:id` | `GET` `PATCH` `DELETE`
-
-`/posts` | `UPLOAD`
-
-**permissions**
-
-`/permissions` | `GET` `POST`
-
-`/permissions/:id` | `PATCH` | `DELETE`
-
-**roles**
-
-`/roles` | `GET` `POST`
-
-`/roles/:roleId` | `PATCH` `DELETE`
-
-`/roles/:roleId/permissions` | `PUT` `POST` `DELETE`
-
-`/roles/user/:userId` | `GET` `POST` `PUT`
-
-`roles/user:userId/role/:roleId` | `DELETE`
-
-
-
+The initial users will not be able to access anything so you will need to go into the **UserRoles** table and set some basic permissions / roles. If you seed the database, you can assign users (once created) to **1** (Admin) or **2** (User). To view the tables and make changes, you can utilize `npx prisma studio` to access Prisma's built in table editor / viewer.

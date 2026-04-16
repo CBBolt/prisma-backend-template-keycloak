@@ -1,18 +1,19 @@
-import jwt from "jsonwebtoken";
+import { jwtVerify, createRemoteJWKSet } from "jose";
+import dotenv from "dotenv";
 
-const JWT_SECRET = process.env.JWT_SECRET as string; // Get JWT secret from env
+dotenv.config();
 
-// Create JWT Token
-export const createToken = (userId: number): string => {
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: "1h" }); // Token expires in 1 hour
-};
+const JWKS = createRemoteJWKSet(
+  new URL(
+    `${process.env.KC_URL}/realms/${process.env.KC_REALM}/protocol/openid-connect/certs`,
+  ),
+);
 
-// Verify JWT Token
-export const verifyToken = (token: string): { userId: number } | null => {
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { userId: number };
-    return decoded;
-  } catch (error) {
-    return null; // Token is invalid or expired
-  }
-};
+export async function verifyToken(token: string) {
+  const { payload } = await jwtVerify(token, JWKS, {
+    issuer: `${process.env.KC_URL}/realms/${process.env.KC_REALM}`,
+    audience: process.env.KC_CLIENT_ID,
+  });
+
+  return payload;
+}
