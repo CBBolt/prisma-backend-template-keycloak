@@ -33,7 +33,7 @@ When you initially setup a new keycloak instance, there will only be one realm (
 
    _If you're running the front end locally, it will be http://localhost:5173/\* and http://localhost:5173_
 
-   Make sure `Authorization` is **On**
+   Make sure **Client Authentication** is **Off** (This ensures the client is able to be reached publicly)
 
 ---
 
