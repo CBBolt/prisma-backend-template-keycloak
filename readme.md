@@ -14,6 +14,9 @@ This is a backend template setup with:
 1. Install Dependencies with `npm i`
 2. Setup .env variables
 
+- `DATABASE_URL` (because this template uses MySQL, it will follow `mysql://USERNAME:PASSWORD@localhost:3306/DB_NAME`)
+
+  _Note: This is only needed if you'd like to use the `npx prisma studio` command to verify_
 - `DATABASE_USER`
 - `DATABASE_PASSWORD`
 - `DATABASE_NAME`
