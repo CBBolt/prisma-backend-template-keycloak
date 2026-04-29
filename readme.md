@@ -14,7 +14,6 @@ This is a backend template setup with:
 1. Install Dependencies with `npm i`
 2. Setup .env variables
 
-- `DATABASE_URL` (because this template uses MySQL, it will follow `mysql://USERNAME:PASSWORD@localhost:3306/DB_NAME`)
 - `DATABASE_USER`
 - `DATABASE_PASSWORD`
 - `DATABASE_NAME`
