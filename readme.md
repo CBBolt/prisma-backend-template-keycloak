@@ -16,8 +16,8 @@ This is a backend template setup with:
 
 - `DATABASE_URL` (because this template uses MySQL, it will follow `mysql://USERNAME:PASSWORD@localhost:3306/DB_NAME`)
 - `DATABASE_USER`
-- `DATBASE_PASSWORD`
-- `DATEBASE_NAME`
+- `DATABASE_PASSWORD`
+- `DATABASE_NAME`
 - `DATABASE_HOST` (localhost or URL for public facing DB)
 - `MINIO_URL` (for MinIO server)
 - `MINIO_ROOT_USER`
