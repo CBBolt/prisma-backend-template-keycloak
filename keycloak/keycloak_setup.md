@@ -35,6 +35,19 @@ When you initially setup a new keycloak instance, there will only be one realm (
 
    Make sure **Client Authentication** is **Off** (This ensures the client is able to be reached publicly)
 
+   #### Audience Mapping
+
+   This is crucial for ensuring that the front end can talk to the backend
+
+   - With the `frontend_client` selected go to the `Client Scopes` Tab
+   - Click on the _client name_-dedicated scope
+   - Click `Add mapper` and do `Audience`
+   - Name it whatever and make sure the `backend_client` is included
+   - Also ensure that `Add to access token` is turned on (it should already be)
+   - Click Save
+  
+   The reason for this is that by default the `aud` property in the token will default to `account` and not include the proper client audience. This mapper ensures that it is mapped properly and allows both clients to talk to eachother.
+
 ---
 
 At this point you should have a working version and just need to add a local user via the `Users` tab to add a generic user
